@@ -8,7 +8,7 @@ import SubscriptionDetailsPage from './pages/SubscriptionDetailsPage';
 import SettingsPage from './pages/SettingsPage';
 import WgStatusPage from './pages/WgStatusPage';
 import Layout from './components/Layout';
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from './hooks/useAuth.jsx';
 
 function Private({ children }) {
   const { token } = useAuth();
