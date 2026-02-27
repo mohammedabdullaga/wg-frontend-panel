@@ -4,7 +4,9 @@ console.log('API_BASE configured as:', API_BASE);
 export const Endpoints = {
   login: '/api/admin/login',
   vouchers: '/api/admin/vouchers',
-  createVouchers: '/api/admin/create-voucher',
+  createVoucher: '/api/admin/vouchers', // POST to same path for compatibility
+  // legacy alias (previous versions)
+  createVouchers: '/api/admin/vouchers',
   subscriptions: '/api/admin/subscriptions',
   subscription: id => `/api/admin/subscription/${id}`,
   disableSubscription: id => `/api/admin/subscription/${id}/disable`,
