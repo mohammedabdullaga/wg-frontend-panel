@@ -23,13 +23,14 @@ export default function App() {
       <Route path="/*" element={<Private>
         <Layout>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/vouchers" element={<VouchersPage />} />
             <Route path="/subscriptions" element={<SubscriptionsPage />} />
             <Route path="/subscriptions/:id" element={<SubscriptionDetailsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/wg-status" element={<WgStatusPage />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </Layout>
       </Private>} />

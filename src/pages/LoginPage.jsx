@@ -7,14 +7,23 @@ export default function LoginPage() {
   const [email,setEmail]=useState('');
   const [password,setPassword]=useState('');
   const [error,setError]=useState('');
-  const {login}=useAuth();
+  const {token, login} = useAuth();
   const nav=useNavigate();
+
+  // if already logged in, skip to dashboard
+  React.useEffect(() => {
+    if (token) {
+      nav('/');
+    }
+  }, [token, nav]);
+
   const submit=async e=>{
     e.preventDefault();
     try{
-      const res=await request(Endpoints.login,{method:'POST',body:JSON.stringify({email,password})});
+      const res = await request(Endpoints.login, { method: 'POST', body: JSON.stringify({ email, password }) });
       login(res.token);
-      nav('/');
+      console.log('LOGIN OK, token stored, navigating to dashboard');
+      nav('/dashboard');
     }catch(e){setError(e.message);}
   };
   return (

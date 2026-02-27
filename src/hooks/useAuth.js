@@ -1,11 +1,38 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const TOKEN_KEY = 'wg_admin_token';
-export function useAuth() {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+import { getToken, setToken as storeToken, clearToken } from '../auth/auth';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [token, setTokenState] = useState(getToken());
   const navigate = useNavigate();
-  useEffect(() => { if (token) localStorage.setItem(TOKEN_KEY, token); else localStorage.removeItem(TOKEN_KEY); }, [token]);
-  const login = t => setToken(t);
-  const logout = () => { setToken(null); navigate('/login'); };
-  return { token, login, logout };
+
+  useEffect(() => {
+    if (token) {
+      storeToken(token);
+    } else {
+      clearToken();
+    }
+  }, [token]);
+
+  const login = t => {
+    setTokenState(t);
+  };
+  const logout = () => {
+    setTokenState(null);
+    clearToken();
+    navigate('/login');
+  };
+
+  return (
+    <AuthContext.Provider value={{ token, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
