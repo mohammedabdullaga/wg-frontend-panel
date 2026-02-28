@@ -12,15 +12,25 @@ export default function DashboardPage() {
       try {
         let data;
         try {
+          // Try new /overview endpoint first
           data = await request(Endpoints.overview);
         } catch {
-          const v = await request(Endpoints.vouchers);
-          const s = await request(Endpoints.subscriptions);
+          // Fallback: fetch and compile manually
+          const vData = await request(Endpoints.vouchers);
+          const sData = await request(Endpoints.subscriptions);
+          
+          // Handle both old array format and new { items, count } format
+          const vouchers = Array.isArray(vData) ? vData : (vData.items || []);
+          const subscriptions = Array.isArray(sData) ? sData : (sData.items || []);
+          
           data = {
-            totalVouchers: v.length,
-            redeemedVouchers: v.filter(x => x.is_redeemed).length,
-            activeSubs: s.filter(x => x.status === 'active').length,
-            expiredSubs: s.filter(x => x.status !== 'active').length,
+            vouchers: {
+              total: vouchers.length,
+              redeemed: vouchers.filter(x => x.is_redeemed).length,
+              available: vouchers.length - vouchers.filter(x => x.is_redeemed).length,
+            },
+            subscriptions: subscriptions.length,
+            peers: 0,
           };
         }
         setCounts(data);
@@ -40,10 +50,11 @@ export default function DashboardPage() {
     <div className="p-4">
       <h1 className="text-xl mb-4">Dashboard</h1>
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 border"><strong>Active subs:</strong> {counts.activeSubs || 0}</div>
-        <div className="p-4 border"><strong>Expired/disabled subs:</strong> {counts.expiredSubs || 0}</div>
-        <div className="p-4 border"><strong>Total vouchers:</strong> {counts.totalVouchers || 0}</div>
-        <div className="p-4 border"><strong>Redeemed vouchers:</strong> {counts.redeemedVouchers || 0}</div>
+        <div className="p-4 border"><strong>Subscriptions:</strong> {counts.subscriptions || 0}</div>
+        <div className="p-4 border"><strong>WireGuard Peers:</strong> {counts.peers || 0}</div>
+        <div className="p-4 border"><strong>Total Vouchers:</strong> {counts.vouchers?.total || 0}</div>
+        <div className="p-4 border"><strong>Redeemed:</strong> {counts.vouchers?.redeemed || 0}</div>
+        <div className="p-4 border"><strong>Available:</strong> {counts.vouchers?.available || 0}</div>
       </div>
     </div>
   );
