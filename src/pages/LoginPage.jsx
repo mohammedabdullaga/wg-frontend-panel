@@ -13,6 +13,8 @@ export default function LoginPage() {
   // if already logged in, skip to dashboard
   React.useEffect(() => {
     if (token) {
+      // navigate only after token state has been set by context
+      // the Private wrapper will then allow access
       nav('/');
     }
   }, [token, nav]);
@@ -22,9 +24,11 @@ export default function LoginPage() {
     try{
       const res = await request(Endpoints.login, { method: 'POST', body: JSON.stringify({ email, password }) });
       login(res.token);
-      console.log('LOGIN OK, token stored, navigating to dashboard');
-      nav('/dashboard');
-    }catch(e){setError(e.message);}
+      // navigation is handled by the effect above once token is updated
+    }catch(e){
+      console.error('login error', e);
+      setError(e.message || 'Login failed');
+    }
   };
   return (
     <div className="login-container">
